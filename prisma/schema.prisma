@@ -1,0 +1,55 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  loans     Loan[]
+}
+
+model Book {
+  id          String     @id @default(uuid())
+  title       String
+  author      String
+  isbn        String     @unique
+  publishYear Int
+  description String?
+  cover       String?    
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  available   Boolean    @default(true)
+  loans       Loan[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Loan {
+  id         String    @id @default(uuid())
+  userId     String
+  bookId     String
+  user       User      @relation(fields: [userId], references: [id])
+  book       Book      @relation(fields: [bookId], references: [id])
+  loanDate   DateTime  @default(now())
+  returnDate DateTime?
+  returned   Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}

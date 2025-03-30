@@ -32,16 +32,28 @@ export default function RegisterPage() {
     }
 
     try {
-      // Simulación de registro
-      localStorage.setItem("user", JSON.stringify({ name, email }))
-      router.push("/dashboard")
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        router.push("/dashboard")
+      } else {
+        setError(data.error || "Error al registrar usuario")
+      }
     } catch (err) {
       setError("Error al registrar usuario")
     } finally {
       setLoading(false)
     }
   }
-
+  
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
       <Card className="w-full max-w-md">
